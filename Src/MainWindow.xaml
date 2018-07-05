@@ -1,0 +1,119 @@
+﻿<Window x:Class="ArcGISTest.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013" xmlns:local="clr-namespace:ArcGISTest" mc:Ignorable="d" Title="Lansi World Explorer" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Style.Setters>
+                <Setter Property="Background" Value="Yellow" />
+                <Setter Property="Width" Value="85" />
+                <Setter Property="Height" Value="24" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="BorderBrush" Value="Blue" />
+                <Setter Property="BorderThickness" Value="2" />
+
+                <!--<Setter Property="Control.LayoutTransform">
+                    <Setter.Value>
+                        <RotateTransform Angle="45" />
+                    </Setter.Value>
+                </Setter>-->
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <esri:SceneView x:Name="SceneView" Grid.Column="0">
+            <!--<esri:SceneView.GraphicsOverlays>
+                <esri:GraphicsOverlay x:Name="SceneGraphics"/>
+            </esri:SceneView.GraphicsOverlays>-->
+            <esri:Scene>
+                <esri:Scene.Basemap>
+                    <esri:Basemap>
+                        <esri:ArcGISTiledLayer x:Name="WorldImagery" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
+                        <esri:ArcGISTiledLayer x:Name="WorldTopoMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" Opacity="0" />
+                        <esri:ArcGISTiledLayer x:Name="OpenStreetMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" Opacity="0" />
+                        <esri:ArcGISTiledLayer x:Name="NatGeoWorldMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer" Opacity="0" />
+                        <!--<esri:ArcGISTiledLayer x:Name="World_Shaded_Relief" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer" Opacity="1" />-->
+                    </esri:Basemap>
+                </esri:Scene.Basemap>
+                <esri:Scene.BaseSurface>
+                    <esri:Surface>
+                        <esri:ArcGISTiledElevationSource Name="ElevationSource" Source="http://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer" />
+                    </esri:Surface>
+                </esri:Scene.BaseSurface>
+                <esri:ArcGISSceneLayer Name="BuildingsLayer" Source="http://scene.arcgis.com/arcgis/rest/services/Hosted/Buildings_Berlin/SceneServer/layers/0"/>
+            </esri:Scene>
+        </esri:SceneView>
+
+        <StackPanel Background="AliceBlue" Grid.Column="1">
+            <Border Margin="2,5,2,0" BorderBrush="Black" BorderThickness="5" CornerRadius="5">
+                <WrapPanel>
+                    <Button Content="Reset LOC" ToolTip="Reset Location" Click="ResetLOC_Click" />
+                    <Button Content="Reset RPY" ToolTip="Reset Roll, Pitch and Yaw" Click="ResetRPY_Click" />
+                    <Button Content="Reset LAYER" ToolTip="Reset Layers" Click="ResetLAYER_Click" />
+                    <Button Content="Copy VP" ToolTip="Copy Viewpoint To Clipboard (JSON)" Click="CopyViewpoint_Click" />
+                    <Button Content="TR" ToolTip="Goto Trier" Click="GotoTR_Click" />
+                    <Button Content="KN" ToolTip="Goto Konstanz" Click="GotoKN_Click" />
+                    <Button Content="FN" ToolTip="Goto Friedrichshafen" Click="GotoFN_Click" />
+                    <Button Content="NY" ToolTip="Goto New York" Click="GotoNewYork_Click" />
+                    <Button Content="HIMALAYA" ToolTip="Goto Himalaya" Click="GotoHimalaya_Click" />
+                    <!--<Button Content="RRL" ToolTip="Reset Raster Layer" Click="ResetRasterLayer_Click"/>-->
+                </WrapPanel>
+            </Border>
+
+
+            <Border Margin="2,5,2,0" BorderBrush="Black" BorderThickness="5" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="Elevation Exaggerating" Margin="10,10,0,0" />
+                    <Slider x:Name="sElevationExaggerating" Minimum="0" Maximum="15" Value="0" Margin="10" TickPlacement="BottomRight" TickFrequency="1" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="ElevationExaggerating_ValueChanged" />
+                    <!--<Slider x:Name="sElevationExaggerating" Minimum="0" Maximum="10" Value="{Binding SceneView.Scene.BaseSurface.ElevationExaggeration,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="10" TickPlacement="BottomRight" TickFrequency="1" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" MouseWheel="Slider_MouseWheel" />-->
+                </StackPanel>
+            </Border>
+
+
+            <Border Margin="2,5,2,0" BorderBrush="Black" BorderThickness="5" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="WorldTopoMap" Margin="10,10,0,0" />
+                    <Slider x:Name="sTopoOpacity" Minimum="0" Maximum="100" Value="0" Margin="10" TickFrequency="5" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="TopographieOpacity_ValueChanged" MouseWheel="Slider_MouseWheel" />
+                </StackPanel>
+            </Border>
+
+            <Border Margin="2,5,2,0" BorderBrush="Black" BorderThickness="5" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="OpenStreetMap" Margin="10,10,0,0" />
+                    <Slider x:Name="sOpenStreetMap" Minimum="0" Maximum="100" Value="0" Margin="10" TickFrequency="5" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="OpenStreetMapOpacity_ValueChanged" MouseWheel="Slider_MouseWheel" />
+                </StackPanel>
+            </Border>
+
+            <Border Margin="2,5,2,0" BorderBrush="Black" BorderThickness="5" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="NatGeoWorldMap" Margin="10,10,0,0" />
+                    <Slider x:Name="sNatGeoWorldMap" Minimum="0" Maximum="100" Value="0" Margin="10" TickFrequency="5" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="NatGeoWorldMapOpacity_ValueChanged" MouseWheel="Slider_MouseWheel" />
+                </StackPanel>
+            </Border>
+
+            <!--<Border Margin="2,5,2,0" BorderBrush="CadetBlue" BorderThickness="10" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="Roll"  Margin="10,10,0,0"/>
+                    <Slider x:Name="sRoll" Minimum="0"  Maximum="360" Value="0"  Margin="10" TickFrequency="10" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="CameraChanged" MouseWheel="Slider_MouseWheel"/>
+                </StackPanel>
+            </Border>
+
+            <Border Margin="2,5,2,0" BorderBrush="CadetBlue" BorderThickness="10" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="Pitch"  Margin="10,10,0,0"/>
+                    <Slider x:Name="sPitch" Minimum="0"  Maximum="180" Value="0"  Margin="10" TickFrequency="10" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="CameraChanged" MouseWheel="Slider_MouseWheel"/>
+                </StackPanel>
+            </Border>
+
+            <Border Margin="2,5,2,0" BorderBrush="CadetBlue" BorderThickness="10" CornerRadius="5">
+                <StackPanel>
+                    <Label Content="Heading"  Margin="10,10,0,0"/>
+                    <Slider x:Name="sHeading" Minimum="-180"  Maximum="180" Value="0"  Margin="10" TickFrequency="10" AutoToolTipPrecision="2" AutoToolTipPlacement="BottomRight" ValueChanged="CameraChanged" MouseWheel="Slider_MouseWheel"/>
+                </StackPanel>
+            </Border>-->
+
+        </StackPanel>
+        <!--<GridSplitter Grid.Column="0" Width="1" Background="Black" HorizontalAlignment="Right" VerticalAlignment="Stretch" />-->
+    </Grid>
+</Window>
