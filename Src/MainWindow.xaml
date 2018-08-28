@@ -33,7 +33,6 @@
                         <esri:ArcGISTiledLayer x:Name="WorldTopoMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" Opacity="0" />
                         <esri:ArcGISTiledLayer x:Name="OpenStreetMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" Opacity="0" />
                         <esri:ArcGISTiledLayer x:Name="NatGeoWorldMap" Source="http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer" Opacity="0" />
-                        <!--<esri:ArcGISTiledLayer x:Name="World_Shaded_Relief" Source="http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer" Opacity="1" />-->
                     </esri:Basemap>
                 </esri:Scene.Basemap>
                 <esri:Scene.BaseSurface>

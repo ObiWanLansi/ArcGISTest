@@ -5,8 +5,7 @@ using System.Windows.Input;
 
 using Esri.ArcGISRuntime.Geometry;
 using Esri.ArcGISRuntime.Mapping;
-
-
+using Esri.ArcGISRuntime.Rasters;
 
 namespace ArcGISTest
 {
@@ -33,11 +32,14 @@ namespace ArcGISTest
 
             //-----------------------------------------------------------------
 
-            IWebProxy webProxy = WebRequest.DefaultWebProxy;
-            webProxy.Credentials = CredentialCache.DefaultCredentials;
-            WebRequest.DefaultWebProxy = webProxy;
+            if( true )
+            {
+                IWebProxy webProxy = WebRequest.DefaultWebProxy;
+                webProxy.Credentials = CredentialCache.DefaultCredentials;
+                WebRequest.DefaultWebProxy = webProxy;
 
-            ServicePointManager.ServerCertificateValidationCallback += ( sender , certificate , chain , sslPolicyErrors ) => true;
+                ServicePointManager.ServerCertificateValidationCallback += ( sender , certificate , chain , sslPolicyErrors ) => true;
+            }
 
             //-----------------------------------------------------------------
 
@@ -51,9 +53,24 @@ namespace ArcGISTest
 
             //LoadRasterFile();
             //CreateSphereSymbol();
+
+            //LoadOfflineWorld();
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void LoadOfflineWorld()
+        {
+            RasterLayer rl = new RasterLayer( new Raster( @"C:\Lanser\Entwicklung\GitRepositories\ArcGISTest\OfflineWorldRasterMap.tif" ) );
+            SceneView.Scene.Basemap.BaseLayers.Add( rl );
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
         //private readonly List<RasterLayer> lrl = new List<RasterLayer>();
 
