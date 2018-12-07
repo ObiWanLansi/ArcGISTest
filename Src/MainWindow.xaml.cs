@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Drawing;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -6,6 +7,10 @@ using System.Windows.Input;
 using Esri.ArcGISRuntime.Geometry;
 using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.Rasters;
+using Esri.ArcGISRuntime.Symbology;
+using Esri.ArcGISRuntime.UI;
+
+
 
 namespace ArcGISTest
 {
@@ -32,13 +37,13 @@ namespace ArcGISTest
 
             //-----------------------------------------------------------------
 
-            if( true )
+            if(true)
             {
                 IWebProxy webProxy = WebRequest.DefaultWebProxy;
                 webProxy.Credentials = CredentialCache.DefaultCredentials;
                 WebRequest.DefaultWebProxy = webProxy;
 
-                ServicePointManager.ServerCertificateValidationCallback += ( sender , certificate , chain , sslPolicyErrors ) => true;
+                ServicePointManager.ServerCertificateValidationCallback += ( sender, certificate, chain, sslPolicyErrors ) => true;
             }
 
             //-----------------------------------------------------------------
@@ -49,12 +54,15 @@ namespace ArcGISTest
 
             //SceneView.SetViewpointAsync(new Viewpoint(new MapPoint(06.650053, 49.761471, SpatialReferences.Wgs84), 100000));
             //SceneView.ViewpointChanged += SceneView_ViewpointChanged;
+
             //-----------------------------------------------------------------
 
             //LoadRasterFile();
             //CreateSphereSymbol();
 
             //LoadOfflineWorld();
+
+            CheckDistance();
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,7 +74,7 @@ namespace ArcGISTest
         private void LoadOfflineWorld()
         {
             RasterLayer rl = new RasterLayer( new Raster( @"C:\Lanser\Entwicklung\GitRepositories\ArcGISTest\OfflineWorldRasterMap.tif" ) );
-            SceneView.Scene.Basemap.BaseLayers.Add( rl );
+            this.SceneView.Scene.Basemap.BaseLayers.Add( rl );
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -162,6 +170,72 @@ namespace ArcGISTest
         //    SceneView.SetViewpointAsync( new Viewpoint( bombCenter , 100000 ) );
         //}
 
+
+        /// <summary>
+        /// Checks the distance.
+        /// </summary>
+        private void CheckDistance()
+        {
+            SimpleMarkerSceneSymbol sphereSymbol = new SimpleMarkerSceneSymbol
+            {
+                Style = SimpleMarkerSceneSymbolStyle.Sphere,
+                Color = Color.Red,
+                Height = 1000,
+                Width = 100,
+                Depth = 100,
+                AnchorPosition = SceneSymbolAnchorPosition.Center
+            };
+
+            MapPoint p1 = new MapPoint( 9.386941, 47.666557, SpatialReferences.Wgs84 );
+            MapPoint p2 = new MapPoint( 9.172648, 47.666100, SpatialReferences.Wgs84 );
+
+            GraphicsOverlay symbolsOverlay = new GraphicsOverlay
+            {
+                Opacity = 0.5
+            };
+
+            symbolsOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Draped;
+            symbolsOverlay.Graphics.Add( new Graphic( p1, sphereSymbol ) );
+            symbolsOverlay.Graphics.Add( new Graphic( p2, sphereSymbol ) );
+
+            Polyline p = new Polyline( new[] { p1, p2 } );
+
+            symbolsOverlay.Graphics.Add( new Graphic( p, new SimpleLineSymbol
+            {
+                AntiAlias = true,
+                Style = SimpleLineSymbolStyle.DashDot,
+                Width = 4,
+                Color = Color.Red
+            } ) );
+
+
+            //double dDistance = GeometryEngine.Distance( p1, p2 );
+
+            var result = GeometryEngine.DistanceGeodetic( p1, p2, LinearUnits.Meters, AngularUnits.Degrees, GeodeticCurveType.Geodesic );
+
+            uint iPositionDistanceMeter = 500;
+
+            Geometry g = GeometryEngine.DensifyGeodetic( p, iPositionDistanceMeter, LinearUnits.Meters );
+
+            SimpleMarkerSymbol marker = new SimpleMarkerSymbol
+            {
+                Style = SimpleMarkerSymbolStyle.Circle,
+                Color = Color.Yellow,
+                Size = 20
+            };
+
+            foreach(LineSegment x in (g as Polyline).Parts[0])
+            {
+                symbolsOverlay.Graphics.Add( new Graphic( x.StartPoint, marker ) );
+            }
+
+            this.SceneView.GraphicsOverlays.Add( symbolsOverlay );
+
+            //-----------------------------------------------------------------
+
+            //this.SceneView.SetViewpointAsync( new Viewpoint( p1, 100000 ) );
+        }
+
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -170,15 +244,15 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Input.MouseWheelEventArgs"/> instance containing the event data.</param>
-        private void Slider_MouseWheel( object sender , MouseWheelEventArgs e )
+        private void Slider_MouseWheel( object sender, MouseWheelEventArgs e )
         {
-            if( e.Delta > 0 )
+            if(e.Delta > 0)
             {
-                ( sender as Slider ).Value += 10;
+                (sender as Slider).Value += 10;
             }
             else
             {
-                ( sender as Slider ).Value -= 10;
+                (sender as Slider).Value -= 10;
             }
         }
 
@@ -207,10 +281,10 @@ namespace ArcGISTest
         /// Handles the ValueChanged event of the TopographieOpacity control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{System.Double}"/> instance containing the event data.</param>
-        private void TopographieOpacity_ValueChanged( object sender , RoutedPropertyChangedEventArgs<double> e )
+        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
+        private void TopographieOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
         {
-            WorldTopoMap.Opacity = sTopoOpacity.Value / 100;
+            this.WorldTopoMap.Opacity = this.sTopoOpacity.Value / 100;
             e.Handled = true;
         }
 
@@ -219,10 +293,10 @@ namespace ArcGISTest
         /// Handles the ValueChanged event of the OpenStreetMapOpacity control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{System.Double}"/> instance containing the event data.</param>
-        private void OpenStreetMapOpacity_ValueChanged( object sender , RoutedPropertyChangedEventArgs<double> e )
+        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
+        private void OpenStreetMapOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
         {
-            OpenStreetMap.Opacity = sOpenStreetMap.Value / 100;
+            this.OpenStreetMap.Opacity = this.sOpenStreetMap.Value / 100;
             e.Handled = true;
         }
 
@@ -231,10 +305,10 @@ namespace ArcGISTest
         /// Handles the ValueChanged event of the NatGeoWorldMapOpacity control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{System.Double}"/> instance containing the event data.</param>
-        private void NatGeoWorldMapOpacity_ValueChanged( object sender , RoutedPropertyChangedEventArgs<double> e )
+        /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
+        private void NatGeoWorldMapOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
         {
-            NatGeoWorldMap.Opacity = sNatGeoWorldMap.Value / 100;
+            this.NatGeoWorldMap.Opacity = this.sNatGeoWorldMap.Value / 100;
             e.Handled = true;
         }
 
@@ -244,9 +318,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetLOC_Click( object sender , RoutedEventArgs e )
+        private void ResetLOC_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 0 , 0 , SpatialReferences.Wgs84 ) , 50000000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 0, 0, SpatialReferences.Wgs84 ), 50000000 ) );
             e.Handled = true;
         }
 
@@ -256,11 +330,11 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetRPY_Click( object sender , RoutedEventArgs e )
+        private void ResetRPY_Click( object sender, RoutedEventArgs e )
         {
-            Camera c = SceneView.Camera;
+            Camera c = this.SceneView.Camera;
 
-            SceneView.SetViewpointCamera( new Camera( c.Location.Y , c.Location.X , c.Location.Z , 0 , 0 , 0 ) );
+            this.SceneView.SetViewpointCamera( new Camera( c.Location.Y, c.Location.X, c.Location.Z, 0, 0, 0 ) );
 
             e.Handled = true;
         }
@@ -271,11 +345,11 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetLAYER_Click( object sender , RoutedEventArgs e )
+        private void ResetLAYER_Click( object sender, RoutedEventArgs e )
         {
-            sTopoOpacity.Value = 0;
-            sOpenStreetMap.Value = 0;
-            sNatGeoWorldMap.Value = 0;
+            this.sTopoOpacity.Value = 0;
+            this.sOpenStreetMap.Value = 0;
+            this.sNatGeoWorldMap.Value = 0;
 
             e.Handled = true;
         }
@@ -286,9 +360,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoTR_Click( object sender , RoutedEventArgs e )
+        private void GotoTR_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 6.650053 , 49.761471 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 6.650053, 49.761471, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -298,9 +372,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoKN_Click( object sender , RoutedEventArgs e )
+        private void GotoKN_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.1636708 , 47.6750345 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.1636708, 47.6750345, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -310,9 +384,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoFN_Click( object sender , RoutedEventArgs e )
+        private void GotoFN_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.3856279 , 47.6673831 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.3856279, 47.6673831, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -322,9 +396,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoParis_Click( object sender , RoutedEventArgs e )
+        private void GotoParis_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 2.2944703 , 48.8577159 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 2.2944703, 48.8577159, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -334,9 +408,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoHimalaya_Click( object sender , RoutedEventArgs e )
+        private void GotoHimalaya_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( 83.9283193 , 28.6364527 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 83.9283193, 28.6364527, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -346,9 +420,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoNewYork_Click( object sender , RoutedEventArgs e )
+        private void GotoNewYork_Click( object sender, RoutedEventArgs e )
         {
-            SceneView.SetViewpoint( new Viewpoint( new MapPoint( -74.0092898 , 40.7089826 , SpatialReferences.Wgs84 ) , 10000 ) );
+            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( -74.0092898, 40.7089826, SpatialReferences.Wgs84 ), 10000 ) );
             e.Handled = true;
         }
 
@@ -358,9 +432,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ElevationExaggerating_ValueChanged( object sender , RoutedPropertyChangedEventArgs<double> e )
+        private void ElevationExaggerating_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
         {
-            SceneView.Scene.BaseSurface.ElevationExaggeration = sElevationExaggerating.Value;
+            this.SceneView.Scene.BaseSurface.ElevationExaggeration = this.sElevationExaggerating.Value;
             e.Handled = true;
         }
 
@@ -370,9 +444,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CopyViewpoint_Click( object sender , RoutedEventArgs e )
+        private void CopyViewpoint_Click( object sender, RoutedEventArgs e )
         {
-            Clipboard.SetText( SceneView.GetCurrentViewpoint( ViewpointType.BoundingGeometry ).ToJson() );
+            Clipboard.SetText( this.SceneView.GetCurrentViewpoint( ViewpointType.BoundingGeometry ).ToJson() );
             e.Handled = true;
         }
 
