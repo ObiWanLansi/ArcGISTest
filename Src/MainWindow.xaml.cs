@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,13 +38,13 @@ namespace ArcGISTest
 
             //-----------------------------------------------------------------
 
-            if(true)
+            if (true)
             {
                 IWebProxy webProxy = WebRequest.DefaultWebProxy;
                 webProxy.Credentials = CredentialCache.DefaultCredentials;
                 WebRequest.DefaultWebProxy = webProxy;
 
-                ServicePointManager.ServerCertificateValidationCallback += ( sender, certificate, chain, sslPolicyErrors ) => true;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             }
 
             //-----------------------------------------------------------------
@@ -58,7 +59,7 @@ namespace ArcGISTest
             //-----------------------------------------------------------------
 
             //LoadRasterFile();
-            //CreateSphereSymbol();
+            CreateSphereSymbol();
 
             //LoadOfflineWorld();
 
@@ -73,8 +74,8 @@ namespace ArcGISTest
         /// </summary>
         private void LoadOfflineWorld()
         {
-            RasterLayer rl = new RasterLayer( new Raster( @"C:\Lanser\Entwicklung\GitRepositories\ArcGISTest\OfflineWorldRasterMap.tif" ) );
-            this.SceneView.Scene.Basemap.BaseLayers.Add( rl );
+            RasterLayer rl = new RasterLayer(new Raster(@"C:\Lanser\Entwicklung\GitRepositories\ArcGISTest\OfflineWorldRasterMap.tif"));
+            this.SceneView.Scene.Basemap.BaseLayers.Add(rl);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,65 +111,65 @@ namespace ArcGISTest
 
 
 
-        ///// <summary>
-        ///// Creates the sphere symbol.
-        ///// </summary>
-        //private void CreateSphereSymbol()
-        //{
+        /// <summary>
+        /// Creates the sphere symbol.
+        /// </summary>
+        private void CreateSphereSymbol()
+        {
 
-        //    //-----------------------------------------------------------------
+            //-----------------------------------------------------------------
 
-        //    MapPoint modelCenter = new MapPoint( 06.650053 , 49.761471 , 200 , SpatialReferences.Wgs84 );
+            MapPoint modelCenter = new MapPoint(06.650053, 49.761471, 200, SpatialReferences.Wgs84);
 
-        //    var mss = ModelSceneSymbol.CreateAsync( new Uri( "GlobalHawk.3ds" , UriKind.RelativeOrAbsolute ) , 0.1 );
-        //    mss.Wait();
+            var mss = ModelSceneSymbol.CreateAsync(new Uri("GlobalHawk.3ds", UriKind.RelativeOrAbsolute), 0.1);
+            mss.Wait();
 
-        //    GraphicsOverlay modelOverlay = new GraphicsOverlay();
-        //    modelOverlay.Opacity = 1.0;
-        //    modelOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Absolute;
-        //    modelOverlay.Graphics.Add( new Graphic( modelCenter , mss.Result ) );
+            GraphicsOverlay modelOverlay = new GraphicsOverlay();
+            modelOverlay.Opacity = 1.0;
+            modelOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Absolute;
+            modelOverlay.Graphics.Add(new Graphic(modelCenter, mss.Result));
 
-        //    SceneView.GraphicsOverlays.Add( modelOverlay );
+            SceneView.GraphicsOverlays.Add(modelOverlay);
 
-        //    //-----------------------------------------------------------------
+            //-----------------------------------------------------------------
 
-        //    MapPoint bombCenter = new MapPoint( 06.650053 , 49.761471 , 0 , SpatialReferences.Wgs84 );
+            MapPoint bombCenter = new MapPoint(06.650053, 49.761471, 0, SpatialReferences.Wgs84);
 
-        //    SimpleMarkerSceneSymbol bomb = new SimpleMarkerSceneSymbol
-        //    {
-        //        Style = SimpleMarkerSceneSymbolStyle.Sphere ,
-        //        Color = Colors.Orange ,
-        //        Height = 10 ,
-        //        Width = 10 ,
-        //        Depth = 10 ,
-        //        AnchorPosition = SceneSymbolAnchorPosition.Center
-        //    };
+            SimpleMarkerSceneSymbol bomb = new SimpleMarkerSceneSymbol
+            {
+                Style = SimpleMarkerSceneSymbolStyle.Sphere,
+                Color = Color.Orange,
+                Height = 10,
+                Width = 10,
+                Depth = 10,
+                AnchorPosition = SceneSymbolAnchorPosition.Center
+            };
 
-        //    SimpleMarkerSceneSymbol sphereSymbol = new SimpleMarkerSceneSymbol
-        //    {
-        //        Style = SimpleMarkerSceneSymbolStyle.Sphere ,
-        //        Color = Colors.Red ,
-        //        Height = 3000 ,
-        //        Width = 3000 ,
-        //        Depth = 3000 ,
-        //        AnchorPosition = SceneSymbolAnchorPosition.Center
-        //    };
+            SimpleMarkerSceneSymbol sphereSymbol = new SimpleMarkerSceneSymbol
+            {
+                Style = SimpleMarkerSceneSymbolStyle.Sphere,
+                Color = Color.Red,
+                Height = 3000,
+                Width = 3000,
+                Depth = 3000,
+                AnchorPosition = SceneSymbolAnchorPosition.Center
+            };
 
-        //    //-----------------------------------------------------------------
+            //-----------------------------------------------------------------
 
 
-        //    GraphicsOverlay symbolsOverlay = new GraphicsOverlay();
-        //    symbolsOverlay.Opacity = 0.5;
-        //    symbolsOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Draped;
-        //    symbolsOverlay.Graphics.Add( new Graphic( bombCenter , bomb ) );
-        //    symbolsOverlay.Graphics.Add( new Graphic( bombCenter , sphereSymbol ) );
+            GraphicsOverlay symbolsOverlay = new GraphicsOverlay();
+            symbolsOverlay.Opacity = 0.5;
+            symbolsOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Draped;
+            symbolsOverlay.Graphics.Add(new Graphic(bombCenter, bomb));
+            symbolsOverlay.Graphics.Add(new Graphic(bombCenter, sphereSymbol));
 
-        //    SceneView.GraphicsOverlays.Add( symbolsOverlay );
+            SceneView.GraphicsOverlays.Add(symbolsOverlay);
 
-        //    //-----------------------------------------------------------------
+            //-----------------------------------------------------------------
 
-        //    SceneView.SetViewpointAsync( new Viewpoint( bombCenter , 100000 ) );
-        //}
+            SceneView.SetViewpointAsync(new Viewpoint(bombCenter, 100000));
+        }
 
 
         /// <summary>
@@ -186,8 +187,8 @@ namespace ArcGISTest
                 AnchorPosition = SceneSymbolAnchorPosition.Center
             };
 
-            MapPoint p1 = new MapPoint( 9.386941, 47.666557, SpatialReferences.Wgs84 );
-            MapPoint p2 = new MapPoint( 9.172648, 47.666100, SpatialReferences.Wgs84 );
+            MapPoint p1 = new MapPoint(9.386941, 47.666557, SpatialReferences.Wgs84);
+            MapPoint p2 = new MapPoint(9.172648, 47.666100, SpatialReferences.Wgs84);
 
             GraphicsOverlay symbolsOverlay = new GraphicsOverlay
             {
@@ -195,27 +196,27 @@ namespace ArcGISTest
             };
 
             symbolsOverlay.SceneProperties.SurfacePlacement = SurfacePlacement.Draped;
-            symbolsOverlay.Graphics.Add( new Graphic( p1, sphereSymbol ) );
-            symbolsOverlay.Graphics.Add( new Graphic( p2, sphereSymbol ) );
+            symbolsOverlay.Graphics.Add(new Graphic(p1, sphereSymbol));
+            symbolsOverlay.Graphics.Add(new Graphic(p2, sphereSymbol));
 
-            Polyline p = new Polyline( new[] { p1, p2 } );
+            Polyline p = new Polyline(new[] { p1, p2 });
 
-            symbolsOverlay.Graphics.Add( new Graphic( p, new SimpleLineSymbol
+            symbolsOverlay.Graphics.Add(new Graphic(p, new SimpleLineSymbol
             {
                 AntiAlias = true,
                 Style = SimpleLineSymbolStyle.DashDot,
                 Width = 4,
                 Color = Color.Red
-            } ) );
+            }));
 
 
             //double dDistance = GeometryEngine.Distance( p1, p2 );
 
-            var result = GeometryEngine.DistanceGeodetic( p1, p2, LinearUnits.Meters, AngularUnits.Degrees, GeodeticCurveType.Geodesic );
+            var result = GeometryEngine.DistanceGeodetic(p1, p2, LinearUnits.Meters, AngularUnits.Degrees, GeodeticCurveType.Geodesic);
 
             uint iPositionDistanceMeter = 500;
 
-            Geometry g = GeometryEngine.DensifyGeodetic( p, iPositionDistanceMeter, LinearUnits.Meters );
+            Geometry g = GeometryEngine.DensifyGeodetic(p, iPositionDistanceMeter, LinearUnits.Meters);
 
             SimpleMarkerSymbol marker = new SimpleMarkerSymbol
             {
@@ -224,12 +225,12 @@ namespace ArcGISTest
                 Size = 20
             };
 
-            foreach(LineSegment x in (g as Polyline).Parts[0])
+            foreach (LineSegment x in (g as Polyline).Parts[0])
             {
-                symbolsOverlay.Graphics.Add( new Graphic( x.StartPoint, marker ) );
+                symbolsOverlay.Graphics.Add(new Graphic(x.StartPoint, marker));
             }
 
-            this.SceneView.GraphicsOverlays.Add( symbolsOverlay );
+            this.SceneView.GraphicsOverlays.Add(symbolsOverlay);
 
             //-----------------------------------------------------------------
 
@@ -244,9 +245,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Input.MouseWheelEventArgs"/> instance containing the event data.</param>
-        private void Slider_MouseWheel( object sender, MouseWheelEventArgs e )
+        private void Slider_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if(e.Delta > 0)
+            if (e.Delta > 0)
             {
                 (sender as Slider).Value += 10;
             }
@@ -282,7 +283,7 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
-        private void TopographieOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
+        private void TopographieOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.WorldTopoMap.Opacity = this.sTopoOpacity.Value / 100;
             e.Handled = true;
@@ -294,7 +295,7 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
-        private void OpenStreetMapOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
+        private void OpenStreetMapOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.OpenStreetMap.Opacity = this.sOpenStreetMap.Value / 100;
             e.Handled = true;
@@ -306,7 +307,7 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{double}"/> instance containing the event data.</param>
-        private void NatGeoWorldMapOpacity_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
+        private void NatGeoWorldMapOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.NatGeoWorldMap.Opacity = this.sNatGeoWorldMap.Value / 100;
             e.Handled = true;
@@ -318,9 +319,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetLOC_Click( object sender, RoutedEventArgs e )
+        private void ResetLOC_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 0, 0, SpatialReferences.Wgs84 ), 50000000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(0, 0, SpatialReferences.Wgs84), 50000000));
             e.Handled = true;
         }
 
@@ -330,11 +331,11 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetRPY_Click( object sender, RoutedEventArgs e )
+        private void ResetRPY_Click(object sender, RoutedEventArgs e)
         {
             Camera c = this.SceneView.Camera;
 
-            this.SceneView.SetViewpointCamera( new Camera( c.Location.Y, c.Location.X, c.Location.Z, 0, 0, 0 ) );
+            this.SceneView.SetViewpointCamera(new Camera(c.Location.Y, c.Location.X, c.Location.Z, 0, 0, 0));
 
             e.Handled = true;
         }
@@ -345,7 +346,7 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ResetLAYER_Click( object sender, RoutedEventArgs e )
+        private void ResetLAYER_Click(object sender, RoutedEventArgs e)
         {
             this.sTopoOpacity.Value = 0;
             this.sOpenStreetMap.Value = 0;
@@ -360,9 +361,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoTR_Click( object sender, RoutedEventArgs e )
+        private void GotoTR_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 6.650053, 49.761471, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(6.650053, 49.761471, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -372,9 +373,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoKN_Click( object sender, RoutedEventArgs e )
+        private void GotoKN_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.1636708, 47.6750345, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(9.1636708, 47.6750345, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -384,9 +385,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoFN_Click( object sender, RoutedEventArgs e )
+        private void GotoFN_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 9.3856279, 47.6673831, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(9.3856279, 47.6673831, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -396,9 +397,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoParis_Click( object sender, RoutedEventArgs e )
+        private void GotoParis_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 2.2944703, 48.8577159, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(2.2944703, 48.8577159, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -408,9 +409,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoHimalaya_Click( object sender, RoutedEventArgs e )
+        private void GotoHimalaya_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( 83.9283193, 28.6364527, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(83.9283193, 28.6364527, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -420,9 +421,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void GotoNewYork_Click( object sender, RoutedEventArgs e )
+        private void GotoNewYork_Click(object sender, RoutedEventArgs e)
         {
-            this.SceneView.SetViewpoint( new Viewpoint( new MapPoint( -74.0092898, 40.7089826, SpatialReferences.Wgs84 ), 10000 ) );
+            this.SceneView.SetViewpoint(new Viewpoint(new MapPoint(-74.0092898, 40.7089826, SpatialReferences.Wgs84), 10000));
             e.Handled = true;
         }
 
@@ -432,7 +433,7 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ElevationExaggerating_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
+        private void ElevationExaggerating_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.SceneView.Scene.BaseSurface.ElevationExaggeration = this.sElevationExaggerating.Value;
             e.Handled = true;
@@ -444,9 +445,9 @@ namespace ArcGISTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CopyViewpoint_Click( object sender, RoutedEventArgs e )
+        private void CopyViewpoint_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText( this.SceneView.GetCurrentViewpoint( ViewpointType.BoundingGeometry ).ToJson() );
+            Clipboard.SetText(this.SceneView.GetCurrentViewpoint(ViewpointType.BoundingGeometry).ToJson());
             e.Handled = true;
         }
 
