@@ -168,7 +168,8 @@ namespace ArcGISTest
 
             //-----------------------------------------------------------------
 
-            SceneView.SetViewpointAsync(new Viewpoint(bombCenter, 100000));
+            //SceneView.SetViewpointAsync(new Viewpoint(bombCenter, 100000));
+            SceneView.SetViewpointAsync(new Viewpoint(bombCenter, 1000));
         }
 
 
